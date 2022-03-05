@@ -1,0 +1,12 @@
+*.meta
+*.csproj
+*.sln
+
+moblile/Library
+moblile/Logs
+moblile/Packages
+moblile/ProjectSettings
+moblile/Temp
+moblile/UserSettings
+
+moblile/Assets/3rdParties
