@@ -76,7 +76,6 @@ public class MqttClientBehavior : M2MqttUnityClient
     protected override void DecodeMessage(string topic, byte[] message)
     {
         string msg = System.Text.Encoding.UTF8.GetString(message);
-        Debug.Log(topic + ": " + msg);
         foreach (Action<string> action in subscribedTopicCallbacks[topic])
         {
             action(msg);

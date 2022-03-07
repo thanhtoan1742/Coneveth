@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class HumidityGaugeCard : MonoBehaviour {
     protected string mqttTopic = "thanhtoan1742/feeds/baal.humidity";
-    protected GaugeCard gaugeCard;
+    protected GaugeCard card;
 
     protected void OnValueChange(string message) {
-        gaugeCard.value = float.Parse(message);
+        card.value = float.Parse(message);
     }
 
     void Awake() {
-        gaugeCard = gameObject.GetComponent<GaugeCard>();
-        gaugeCard.unit = "%";
-        gaugeCard.minValue = 0f;
-        gaugeCard.maxValue = 100f;
+        card = gameObject.GetComponent<GaugeCard>();
+        card.unit = "%";
+        card.minValue = 0f;
+        card.maxValue = 100f;
         MainManager.instance.SubscribeTopic(mqttTopic, OnValueChange);
     }
 }

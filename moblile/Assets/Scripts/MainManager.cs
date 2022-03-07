@@ -32,7 +32,6 @@ public class MainManager : MonoBehaviour
 
     public void SubscribeTopic(string topic, Action<string> callback)
     {
-        Debug.Log("subed to topic " + topic);
         mqttClientBehavior.AddSubscribedTopicCallbacks(topic, callback);
     }
 
