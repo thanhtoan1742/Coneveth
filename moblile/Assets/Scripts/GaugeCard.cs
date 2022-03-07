@@ -8,9 +8,23 @@ using TMPro;
 public class GaugeCard : MonoBehaviour
 {
     public string unit = "%";
-    public float minValue = 0f;
-    public float maxValue = 100f;
-    private float _value = 50f;
+    protected float _minValue = 0f;
+    public float minValue {
+        get { return _minValue; }
+        set {
+            _minValue = value;
+            UpdateMinMaxText();
+        }
+    }
+    protected float _maxValue = 100f;
+    public float maxValue {
+        get { return _maxValue; }
+        set {
+            _maxValue = value;
+            UpdateMinMaxText();
+        }
+    }
+    protected float _value = 50f;
     public float value {
         get { return _value; }
         set {
@@ -22,15 +36,13 @@ public class GaugeCard : MonoBehaviour
 
     protected Gauge gauge;
     protected TMP_Text valueText;
+    protected TMP_Text minText;
+    protected TMP_Text maxText;
 
 
-    void Awake()
-    {
-        TMP_Text minText = null, maxText = null;
-        foreach (Transform child in gameObject.transform)
-        {
-            if (child.gameObject.name == "Gauge")
-            {
+    void Awake() {
+        foreach (Transform child in gameObject.transform) {
+            if (child.gameObject.name == "Gauge") {
                 gauge = child.gameObject.GetComponent<Gauge>();
                 valueText = child.Find("Value").gameObject.GetComponent<TMP_Text>();
             }
@@ -40,10 +52,13 @@ public class GaugeCard : MonoBehaviour
                 maxText = child.gameObject.GetComponent<TMP_Text>();
         }
 
+        UpdateMinMaxText();
+        UpdateUI();
+    }
+
+    void UpdateMinMaxText() {
         minText.text = minValue.ToString();
         maxText.text = maxValue.ToString();
-
-        UpdateUI();
     }
 
     void UpdateUI() {
