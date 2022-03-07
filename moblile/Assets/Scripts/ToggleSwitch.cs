@@ -5,8 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-public class ToggleSwitch : MonoBehaviour
-{
+public class ToggleSwitch : MonoBehaviour {
     // Start is called before the first frame update
 
 
@@ -19,45 +18,50 @@ public class ToggleSwitch : MonoBehaviour
     public float animationDuration = 0.5f;
 
 
-
-    protected GameObject leftEnd;
-    protected GameObject middle;
-    protected GameObject rightEnd;
-    protected GameObject knob;
-
-
+    protected Image leftImage;
+    protected Image rightImage;
+    protected Image middleImage;
     protected RectTransform knobRectTransform;
-    protected float middleWidth;
+
+
     protected Toggle toggle;
+    protected float middleWidth;
+
 
     private List<Task> tweenTasks = new List<Task>();
 
-    protected void AssignChildGameObject()
-    {
-        leftEnd = gameObject.transform.GetChild(0).gameObject;
-        middle = gameObject.transform.GetChild(1).gameObject;
-        rightEnd = gameObject.transform.GetChild(2).gameObject;
-        knob = gameObject.transform.GetChild(3).gameObject;
-    }
 
-    void Awake()
-    {
-        AssignChildGameObject();
-        knobRectTransform = knob.GetComponent<RectTransform>();
+    void Awake() {
+        RectTransform middleRectTransform = null;
+        GameObject knob = null;
+
+        middleWidth = gameObject.GetComponent<RectTransform>().rect.width;
+        foreach (Transform child in gameObject.transform) {
+            if (child.gameObject.name == "Left") {
+                leftImage = child.gameObject.GetComponent<Image>();
+                middleWidth -= child.gameObject.GetComponent<RectTransform>().rect.width;
+            }
+            if (child.gameObject.name == "Right") {
+                rightImage = child.gameObject.GetComponent<Image>();
+                middleWidth -= child.gameObject.GetComponent<RectTransform>().rect.width;
+            }
+            if (child.gameObject.name == "Middle") {
+                middleImage = child.gameObject.GetComponent<Image>();
+                middleRectTransform = child.gameObject.GetComponent<RectTransform>();
+            }
+            if (child.gameObject.name == "Knob") {
+                knob = child.gameObject;
+                knobRectTransform = knob.GetComponent<RectTransform>();
+            }
+        }
         toggle = gameObject.GetComponent<Toggle>();
-        middleWidth =
-            gameObject.GetComponent<RectTransform>().rect.width
-            - leftEnd.GetComponent<RectTransform>().rect.width
-            - rightEnd.GetComponent<RectTransform>().rect.width;
 
-        var middleRectTransform = middle.GetComponent<RectTransform>();
         middleRectTransform.sizeDelta = new Vector2(
             middleRectTransform.sizeDelta.x + middleWidth - middleRectTransform.rect.width,
             middleRectTransform.sizeDelta.y
         );
 
-        foreach (Transform child in knob.transform)
-        {
+        foreach (Transform child in knob.transform) {
             child.gameObject.GetComponent<Image>().color = knobColor;
         }
 
@@ -69,22 +73,22 @@ public class ToggleSwitch : MonoBehaviour
         Task.WaitAll(tweenTasks.ToArray());
         tweenTasks.Clear();
 
-        var pos = new Vector2(
+        var newKnobPosition = new Vector2(
             toggle.isOn ? middleWidth/2 : -middleWidth/2,
             knobRectTransform.anchoredPosition.y
         );
         tweenTasks.Add(DOTween.To(
             () => knobRectTransform.anchoredPosition,
-            x => knobRectTransform.anchoredPosition = x,
-            pos,
+            position => knobRectTransform.anchoredPosition = position,
+            newKnobPosition,
             animationDuration
         ).AsyncWaitForCompletion());
 
-        foreach (var g in new GameObject[]{leftEnd, middle, rightEnd})
+        foreach (var image in new Image[]{leftImage, middleImage, rightImage})
         {
             tweenTasks.Add(DOTween.To(
-                () => g.GetComponent<Image>().color,
-                x => g.GetComponent<Image>().color = x,
+                () => image.color,
+                color => image.color = color,
                 toggle.isOn ? ativeColor : inactiveColor,
                 animationDuration
             ).AsyncWaitForCompletion());
