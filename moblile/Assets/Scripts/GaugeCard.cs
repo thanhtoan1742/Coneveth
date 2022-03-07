@@ -7,16 +7,22 @@ using TMPro;
 
 public class GaugeCard : MonoBehaviour
 {
+    public string unit = "%";
     public float minValue = 0f;
     public float maxValue = 100f;
-    public float value = 50f;
-    public string unit = "%";
+    private float _value = 50f;
+    public float value {
+        get { return _value; }
+        set {
+            _value = value;
+            UpdateUI();
+        }
+    }
 
 
     protected Gauge gauge;
     protected TMP_Text valueText;
 
-    protected Task task = null;
 
     void Awake()
     {
@@ -36,20 +42,12 @@ public class GaugeCard : MonoBehaviour
 
         minText.text = minValue.ToString();
         maxText.text = maxValue.ToString();
+
+        UpdateUI();
     }
 
-    void UpdateUI()
-    {
+    void UpdateUI() {
         valueText.text = string.Format("{0:0}", value) + unit;
         gauge.amount = (value - minValue)/(maxValue - minValue);
-    }
-
-    async void Update()
-    {
-        if (task != null)
-            await task;
-        value = Random.Range(minValue, maxValue);
-        UpdateUI();
-        task = Task.Delay(1000);
     }
 }

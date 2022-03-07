@@ -9,11 +9,9 @@ public class Gauge : MonoBehaviour
     private static float guageEmpty = 0.097f;
     private static float guageFull = 0.91f;
     private float _amount = 0.5f;
-    public float amount
-    {
+    public float amount {
         get { return _amount; }
-        set
-        {
+        set {
             _amount = Mathf.Clamp01(value);
             UpdateUI();
         }
@@ -26,10 +24,8 @@ public class Gauge : MonoBehaviour
     protected Image backgroundImage;
     protected Image filledImage;
 
-    void AssignChildGameObjects()
-    {
-        foreach (Transform child in gameObject.transform)
-        {
+    void Awake() {
+        foreach (Transform child in gameObject.transform) {
             if (child.gameObject.name == "Filled")
                 filled = child.gameObject;
             if (child.gameObject.name == "Background")
@@ -40,14 +36,8 @@ public class Gauge : MonoBehaviour
 
         UpdateUI();
     }
-
-    void UpdateUI()
-    {
+    void UpdateUI() {
         filledImage.fillAmount = (guageFull - guageEmpty)*amount + guageEmpty;
     }
 
-    void Awake()
-    {
-        AssignChildGameObjects();
-    }
 }
