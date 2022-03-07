@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18867922, g: 0.18778922, b: 0.18778922, a: 1}
+  m_Color: {r: 0.28235295, g: 0.28235295, b: 0.28235295, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -495,11 +495,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9c508a387fa21b4adcb937b152e716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ativeColor: {r: 0.39215687, g: 0.8666667, b: 0.09019608, a: 1}
-  inactiveColor: {r: 0.8392157, g: 0, b: 0, a: 1}
-  knob: {fileID: 613637548854995183}
-  middle: {fileID: 3513837965676495620}
-  endPoint: {fileID: 3548351558559326295}
+  ativeColor: {r: 0.2627451, g: 0.59607846, b: 0.5372549, a: 1}
+  inactiveColor: {r: 0.2627451, g: 0.59607846, b: 0.5372549, a: 0.30588236}
+  knobColor: {r: 0.41509432, g: 0.41509432, b: 0.41509432, a: 1}
+  animationDuration: 0.5
 --- !u!1 &9187164490143372887
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,7 +557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18867922, g: 0.18778922, b: 0.18778922, a: 1}
+  m_Color: {r: 0.28235295, g: 0.28235295, b: 0.28235295, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

@@ -13,6 +13,7 @@ public class ToggleSwitch : MonoBehaviour
     [Header("Colors")]
     public Color ativeColor;
     public Color inactiveColor;
+    public Color knobColor;
 
     [Header("Animation duration")]
     public float animationDuration = 0.5f;
@@ -54,6 +55,12 @@ public class ToggleSwitch : MonoBehaviour
             middleRectTransform.sizeDelta.x + middleWidth - middleRectTransform.rect.width,
             middleRectTransform.sizeDelta.y
         );
+
+        foreach (Transform child in knob.transform)
+        {
+            child.gameObject.GetComponent<Image>().color = knobColor;
+        }
+
         UpdateUI();
     }
 
