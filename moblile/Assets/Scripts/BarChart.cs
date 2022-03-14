@@ -2,32 +2,67 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 
 public class BarChart : MonoBehaviour {
     public GameObject barPrefab;
     public int capacity = 10;
     protected GameObject barsGameObject;
+    protected TMP_Text minText;
+    protected TMP_Text maxText;
 
-    void Awake() {
-        barsGameObject = gameObject.transform.Find("Bars").gameObject;
+    protected float _minValue = 0f;
+    public float minValue {
+        get { return _minValue; }
+        set {
+            _minValue = value;
+            UpdateMinMaxText();
+        }
+    }
+    protected float _maxValue = 100f;
+    public float maxValue {
+        get { return _maxValue; }
+        set {
+            _maxValue = value;
+            UpdateMinMaxText();
+        }
     }
 
-    GameObject CreateBar(float amount) {
+    protected BarChart barChart;
+
+    void Awake() {
+        foreach (Transform child in gameObject.transform) {
+            if (child.gameObject.name == "MinText")
+                minText = child.gameObject.GetComponent<TMP_Text>();
+            if (child.gameObject.name == "MaxText")
+                maxText = child.gameObject.GetComponent<TMP_Text>();
+            if (child.gameObject.name == "Foreground")
+                barsGameObject = child.Find("Bars").gameObject;
+        }
+        UpdateMinMaxText();
+        UpdateUI();
+    }
+
+    void UpdateMinMaxText() {
+        minText.text = minValue.ToString();
+        maxText.text = maxValue.ToString();
+    }
+
+    GameObject CreateBar(float value) {
         GameObject barGameObject = Instantiate(barPrefab);
-        Bar bar = barGameObject.GetComponent<Bar>();
-        bar.amount = amount;
-        bar.Awake();
+        barGameObject.GetComponent<Bar>().amount = (value - minValue)/(maxValue - minValue);
         return barGameObject;
     }
 
-    void Add(float amount) {
-        if (barsGameObject.transform.childCount == capacity) {
+    public void Add(float value) {
+        while (barsGameObject.transform.childCount >= capacity) {
             Transform child = barsGameObject.transform.GetChild(0);
             child.SetParent(null);
             Destroy(child.gameObject);
         }
-        GameObject g = CreateBar(amount);
+        GameObject g = CreateBar(value);
         g.transform.SetParent(barsGameObject.transform, false);
         g.transform.SetAsLastSibling();
         UpdateUI();
@@ -41,14 +76,5 @@ public class BarChart : MonoBehaviour {
             rectTransform.anchorMax = new Vector2(1.0f/capacity*(cnt + 1), 1);
             cnt += 1;
         }
-    }
-
-
-    protected Task task = null;
-    void Update() {
-        if (task != null && !task.IsCompleted)
-            return;
-        Add(Random.Range(0f, 1f));
-        task = Task.Delay(100);
     }
 }

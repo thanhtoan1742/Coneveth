@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Gauge : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class Gauge : MonoBehaviour
             UpdateUI();
         }
     }
+
+    protected Task tweenTask = null;
 
 
     protected GameObject background;
@@ -36,8 +39,16 @@ public class Gauge : MonoBehaviour
 
         UpdateUI();
     }
-    void UpdateUI() {
-        filledImage.fillAmount = (guageFull - guageEmpty)*amount + guageEmpty;
+    async void UpdateUI() {
+        if (tweenTask != null && !tweenTask.IsCompleted)
+            await tweenTask;
+        tweenTask = DOTween.To(
+            () => filledImage.fillAmount,
+            (fa) => filledImage.fillAmount = fa,
+            (guageFull - guageEmpty)*amount + guageEmpty,
+            0.25f
+        ).AsyncWaitForCompletion();
+        // filledImage.fillAmount = (guageFull - guageEmpty)*amount + guageEmpty;
     }
 
 }
