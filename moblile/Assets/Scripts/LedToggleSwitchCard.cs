@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 
-public class PumpToggleSwitchCard : MonoBehaviour {
-    public const string mqttTopic = PumpDataModel.mqttTopic;
+public class LedToggleSwitchCard : MonoBehaviour {
+    public const string mqttTopic = LedDataModel.mqttTopic;
     protected ToggleSwitchCard card;
 
     void Awake() {
         card = gameObject.GetComponent<ToggleSwitchCard>();
         card.AddListener((value) => {
-            string message = JsonConvert.SerializeObject(new PumpDataModel(value));
+            string message = JsonConvert.SerializeObject(new LedDataModel(value));
             Debug.Log(message);
             MainManager.instance.PublishTopic(mqttTopic, message);
         });

@@ -2,19 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public class TestBehaviour : MonoBehaviour {
-    protected Gauge gauge;
-
-    protected Task task = null;
-    void Awake() {
-        gauge = GetComponent<Gauge>();
+    protected string mqttTopic = "/bkiot/1910617/pump";
+    protected void OnValueChange(string message) {
+        var data = JsonConvert.DeserializeObject<PumpDataModel>(message);
+        Debug.Log(data);
     }
 
-    void Update() {
-        if (task != null && !task.IsCompleted)
-            return;
-        gauge.amount = Random.Range(0f, 1f);
-        task = Task.Delay(1000);
+    void Awake() {
+        MainManager.instance.SubscribeTopic(mqttTopic, OnValueChange);
     }
 }

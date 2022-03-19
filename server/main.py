@@ -1,6 +1,7 @@
 import time
 import json
 import paho.mqtt.client as mqtt
+import random
 
 
 BROKER = 'mqttserver.tk'
@@ -18,27 +19,39 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe(topic)
 
 def on_message(client, userdata, msg):
-    print(f'{msg.topic}: {msg.payload}')
+    print(f'GOT:: {msg.topic}: {msg.payload}')
 
 
 def publish_status(client):
-    # client.publish(STATUS_TOPIC, 'status'.encode(), 1)
-    pass
+    data = json.dumps({
+        'project_id': None,
+        'project_name': None,
+        'station_id': None,
+        'station_name': None,
+        'longtitude': None,
+        'ladtitude': None,
+        'volt_battery': None,
+        'volt_solar': None,
+        'data_ss': None,
+        'device_status': None,
+    })
+    print('SEND::', data)
+    client.publish(STATUS_TOPIC, data)
 
 def publish_led(client):
     data = json.dumps({
         'device': 'LED',
-        'status': 'ON',
+        'status': 'ON' if random.randint(0, 1) else 'OFF',
     })
-    print(data)
+    print('SEND::', data)
     client.publish(LED_TOPIC, data)
 
 def publish_pump(client):
     data = json.dumps({
         'device': 'PUMP',
-        'status': 'OFF',
+        'status': 'ON' if random.randint(0, 1) else 'OFF',
     })
-    print(data)
+    print('SEND::', data)
     client.publish(PUMP_TOPIC, data)
 
 
@@ -55,4 +68,4 @@ if __name__ == '__main__':
         # publish_status(client)
         # publish_led(client)
         # publish_pump(client)
-        time.sleep(3)
+        time.sleep(5)
