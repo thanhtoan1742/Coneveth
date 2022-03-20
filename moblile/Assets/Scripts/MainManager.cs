@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using uPLibrary.Networking.M2Mqtt;
+using uPLibrary.Networking.M2Mqtt.Messages;
 using TMPro;
 
-public class MainManager : MonoBehaviour
-{
+public class MainManager : MonoBehaviour {
     public static MainManager instance = null;
 
     [Header("Text from input")]
@@ -20,7 +21,10 @@ public class MainManager : MonoBehaviour
     public GameObject error;
 
 
-    protected MqttClientBehavior mqttClientBehavior;
+    protected MqttClient client;
+    protected Dictionary<string, List<Action<string>>> listeners;
+
+
 
     protected void Awake() {
         if (instance != null) {
@@ -29,51 +33,83 @@ public class MainManager : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
-        mqttClientBehavior = gameObject.GetComponent<MqttClientBehavior>();
-        mqttClientBehavior.ConnectionSucceeded += mqttOnConnectionSucceeded;
-        mqttClientBehavior.ConnectionFailed += mqttOnConnectionFailed;
+
+        listeners = new Dictionary<string, List<Action<string>>>();
     }
 
-    public void SubscribeTopic(string topic, Action<string> callback) {
-        mqttClientBehavior.AddListenter(topic, callback);
+    protected void OnDestroy() {
+        if (client != null) {
+            string[] keys = new string[listeners.Keys.Count];
+            listeners.Keys.CopyTo(keys, 0);
+            client.Unsubscribe(keys);
+        }
+    }
+
+    public void SubscribeTopic(string topic, Action<string> listener) {
+        if (!listeners.ContainsKey(topic)) {
+            listeners[topic] = new List<Action<string>>();
+            client.Subscribe(
+                new string[] { topic },
+                new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE }
+            );
+        }
+        listeners[topic].Add(listener);
     }
 
     public void PublishTopic(string topic, string message) {
-        mqttClientBehavior.Publish(topic, message);
+        client.Publish(
+            topic,
+            System.Text.Encoding.UTF8.GetBytes(message),
+            MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE,
+            false
+        );
+    }
+
+    protected void MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e) {
+        Debug.Log($"{e.Topic}\n{e.Message.Length}");
+        foreach (var listener in listeners[e.Topic])
+            listener(System.Text.Encoding.UTF8.GetString(e.Message));
     }
 
     public void LoginConnect() {
-        string brokerUri = brokerUriText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
+        string brokerAddress = brokerUriText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
         string username = usernameText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
         string password = passwordText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
+        bool isEncrypted = false;
+        int brokerPort = 1883;
 
-
-        brokerUri = "mqttserver.tk";
-        brokerUri = "mqttserveraaa.tk";
+        brokerAddress = "mqttserver.tk";
+        // brokerAddress = "mqttserveraaa.tk";
         username = "bkiot";
         password = "12345678";
 
-        mqttClientBehavior.brokerAddress = brokerUri;
-        mqttClientBehavior.brokerPort = 1883;
-        mqttClientBehavior.mqttUserName = username;
-        mqttClientBehavior.mqttPassword = password;
+        bool connected = true;
+        try {
+            client = new MqttClient(brokerAddress, brokerPort, isEncrypted, null, null, isEncrypted ? MqttSslProtocols.SSLv3 : MqttSslProtocols.None);
+            client.MqttMsgPublishReceived += MqttMsgPublishReceived;
 
-        mqttClientBehavior.Connect();
+            string clientId = Guid.NewGuid().ToString();
+            client.Connect(clientId, username, password);
+            connected = client.IsConnected;
+        }
+        catch (Exception e) {
+            Debug.Log(e.Message);
+            connected = false;
+        }
+
+        if (connected) {
+            Debug.Log("MQTT Connection Succeeded");
+            SceneManager.LoadScene("Scenes/Dashboard");
+        }
+        else {
+            Debug.Log("MQTT Connection Failed");
+            loginForm.SetActive(false);
+            error.SetActive(true);
+        }
     }
 
     public void LoginErrorBack() {
         error.SetActive(false);
         loginForm.SetActive(true);
-    }
-
-    public void mqttOnConnectionSucceeded() {
-        Debug.Log("MQTT Connection Succeeded");
-        SceneManager.LoadScene("Scenes/Dashboard");
-    }
-
-    public void mqttOnConnectionFailed() {
-        Debug.Log("MQTT Connection Failed");
-        loginForm.SetActive(false);
-        error.SetActive(true);
     }
 }

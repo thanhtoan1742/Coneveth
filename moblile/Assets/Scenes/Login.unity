@@ -2315,7 +2315,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1354387846}
   - component: {fileID: 1354387847}
-  - component: {fileID: 1354387848}
   m_Layer: 0
   m_Name: MainManager
   m_TagString: Untagged
@@ -2354,26 +2353,6 @@ MonoBehaviour:
   passwordText: {fileID: 499838108}
   loginForm: {fileID: 1956785946}
   error: {fileID: 1845183024}
---- !u!114 &1354387848
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1354387845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7ca96b2fd90d6fa1ab814fe3beb34ee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  brokerAddress: localhost
-  brokerPort: 1883
-  isEncrypted: 0
-  connectionDelay: 500
-  timeoutOnConnection: 30000
-  autoConnect: 0
-  mqttUserName: 
-  mqttPassword: 
 --- !u!1 &1455181170
 GameObject:
   m_ObjectHideFlags: 0
