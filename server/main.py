@@ -24,16 +24,18 @@ def on_message(client, userdata, msg):
 
 def publish_status(client):
     data = json.dumps({
-        'project_id': None,
-        'project_name': None,
-        'station_id': None,
-        'station_name': None,
-        'longtitude': None,
-        'ladtitude': None,
-        'volt_battery': None,
-        'volt_solar': None,
-        'data_ss': None,
-        'device_status': None,
+        # 'project_id': None,
+        # 'project_name': None,
+        # 'station_id': None,
+        # 'station_name': None,
+        # 'longtitude': None,
+        # 'ladtitude': None,
+        # 'volt_battery': None,
+        # 'volt_solar': None,
+        # 'data_ss': None,
+        # 'device_status': None,
+        'temperature': random.randint(0, 60),
+        'humidity': random.randint(0, 100),
     })
     print('SEND::', data)
     client.publish(STATUS_TOPIC, data)
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     client.loop_start()
 
     while 1:
-        # publish_status(client)
+        publish_status(client)
         # publish_led(client)
         # publish_pump(client)
         time.sleep(5)

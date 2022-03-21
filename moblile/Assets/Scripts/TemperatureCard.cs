@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using Newtonsoft.Json;
 
-public class TemperatureCard : Card {
-    protected string mqttTopic = "thanhtoan1742/feeds/baal.temperature";
+public class TemperatureCard : MonoBehaviour {
+    protected string mqttTopic = StatusDataModel.mqttTopic;
     protected Card card;
 
     protected void OnValueChange(string message) {
-        card.value = message;
+        var data = JsonConvert.DeserializeObject<StatusDataModel>(message);
+        card.value = data.temperature.ToString();
     }
 
     void Awake() {

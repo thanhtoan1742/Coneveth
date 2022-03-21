@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -21,9 +22,15 @@ public class MainManager : MonoBehaviour {
     public GameObject error;
 
 
+    protected string brokerAddress;
+    protected int brokerPort;
+    protected bool isEncrypted;
+    protected string username;
+    protected string password;
     protected MqttClient client;
     protected Dictionary<string, List<Action<string>>> listeners;
-
+    protected List<MqttMsgPublishEventArgs> frontMessageQueue;
+    protected List<MqttMsgPublishEventArgs> backMessageQueue;
 
 
     protected void Awake() {
@@ -35,6 +42,8 @@ public class MainManager : MonoBehaviour {
         DontDestroyOnLoad(gameObject);
 
         listeners = new Dictionary<string, List<Action<string>>>();
+        frontMessageQueue = new List<MqttMsgPublishEventArgs>();
+        backMessageQueue = new List<MqttMsgPublishEventArgs>();
     }
 
     protected void OnDestroy() {
@@ -66,24 +75,11 @@ public class MainManager : MonoBehaviour {
     }
 
     protected void MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e) {
-        Debug.Log($"{e.Topic}\n{e.Message.Length}");
-        foreach (var listener in listeners[e.Topic])
-            listener(System.Text.Encoding.UTF8.GetString(e.Message));
+        frontMessageQueue.Add(e);
     }
 
-    public void LoginConnect() {
-        string brokerAddress = brokerUriText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
-        string username = usernameText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
-        string password = passwordText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
-        bool isEncrypted = false;
-        int brokerPort = 1883;
-
-        brokerAddress = "mqttserver.tk";
-        // brokerAddress = "mqttserveraaa.tk";
-        username = "bkiot";
-        password = "12345678";
-
-        bool connected = true;
+    protected void MqttConnect() {
+        bool connected = false;
         try {
             client = new MqttClient(brokerAddress, brokerPort, isEncrypted, null, null, isEncrypted ? MqttSslProtocols.SSLv3 : MqttSslProtocols.None);
             client.MqttMsgPublishReceived += MqttMsgPublishReceived;
@@ -100,16 +96,49 @@ public class MainManager : MonoBehaviour {
         if (connected) {
             Debug.Log("MQTT Connection Succeeded");
             SceneManager.LoadScene("Scenes/Dashboard");
-        }
-        else {
+        } else {
             Debug.Log("MQTT Connection Failed");
             loginForm.SetActive(false);
             error.SetActive(true);
+            client = null;
         }
+    }
+
+    void ProcessMqttEvents() {
+        foreach (var e in backMessageQueue) {
+            string topic = e.Topic;
+            string message = System.Text.Encoding.UTF8.GetString(e.Message);
+            foreach (var listener in listeners[topic])
+                listener(message);
+        }
+        backMessageQueue.Clear();
+    }
+
+    void Update() {
+        var tempQueue = frontMessageQueue;
+        frontMessageQueue = backMessageQueue;
+        backMessageQueue = tempQueue;
+
+        ProcessMqttEvents();
+    }
+
+    public void LoginConnect() {
+        brokerAddress = brokerUriText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
+        username = usernameText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
+        password = passwordText.GetComponent<TMP_Text>().text.Trim().Replace("\u200B", "");
+        isEncrypted = false;
+        brokerPort = 1883;
+
+        // brokerAddress = "mqttserver.tk";
+        // brokerAddress = "mqttserveraaa.tk";
+        // username = "bkiot";
+        // password = "12345678";
+        MqttConnect();
     }
 
     public void LoginErrorBack() {
         error.SetActive(false);
         loginForm.SetActive(true);
+        client = null;
     }
 }

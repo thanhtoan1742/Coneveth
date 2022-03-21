@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public class TemperatureBarChartCard : MonoBehaviour {
-    protected string mqttTopic = "thanhtoan1742/feeds/baal.temperature";
+    protected string mqttTopic = StatusDataModel.mqttTopic;
     protected BarChartCard card;
 
     protected void OnValueChange(string message) {
-        card.Add(float.Parse(message));
+        // card.Add(float.Parse(message));
+        var data = JsonConvert.DeserializeObject<StatusDataModel>(message);
+        card.Add(data.temperature);
     }
 
     void Awake() {

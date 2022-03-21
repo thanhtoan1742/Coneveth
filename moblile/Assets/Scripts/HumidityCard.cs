@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 public class HumidityCard : MonoBehaviour {
-    protected string mqttTopic = "thanhtoan1742/feeds/baal.humidity";
+    protected string mqttTopic = StatusDataModel.mqttTopic;
     protected Card card;
 
     protected void OnValueChange(string message) {
-        card.value = message;
+        var data = JsonConvert.DeserializeObject<StatusDataModel>(message);
+        card.value = data.humidity.ToString();
     }
 
     void Awake() {

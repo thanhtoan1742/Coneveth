@@ -37,4 +37,7 @@ public class LedDataModel {
 
 public class StatusDataModel {
     public const string mqttTopic = "/bkiot/1910617/status";
+
+    public float temperature;
+    public float humidity;
 }
