@@ -8,4 +8,4 @@ Coneveth is a project include:
 
 ## Naming
 Conenveth is short for "connect every thing" because I run of
-ways to name project.
+way to name project.
