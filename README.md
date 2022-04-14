@@ -1,3 +1,11 @@
-# IoT Lab
+# Coneveth
+Coneveth is a internet of things project.
 
-IoT app
+Coneveth is a project include:
+- An IoT gateway
+- A mobile application (Android)
+
+
+## Naming
+Conenveth is short for "connect every thing" because I run of
+ways to name project.
