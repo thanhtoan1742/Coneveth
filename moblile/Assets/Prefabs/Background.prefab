@@ -155,7 +155,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: IoT Dashboard Demo
+  m_text: Coneveth
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c079504aae63ffece86ba8ae17039280, type: 2}
   m_sharedMaterial: {fileID: -7753717691623260304, guid: c079504aae63ffece86ba8ae17039280, type: 2}
