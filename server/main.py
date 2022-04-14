@@ -38,7 +38,7 @@ def publish_status(client):
         'humidity': random.randint(0, 100),
     })
     print('SEND::', data)
-    client.publish(STATUS_TOPIC, data)
+    client.publish(STATUS_TOPIC, data, qos=1, retain=True)
 
 def publish_led(client):
     data = json.dumps({
@@ -46,7 +46,7 @@ def publish_led(client):
         'status': 'ON' if random.randint(0, 1) else 'OFF',
     })
     print('SEND::', data)
-    client.publish(LED_TOPIC, data)
+    client.publish(LED_TOPIC, data, qos=1, retain=True)
 
 def publish_pump(client):
     data = json.dumps({
@@ -54,7 +54,7 @@ def publish_pump(client):
         'status': 'ON' if random.randint(0, 1) else 'OFF',
     })
     print('SEND::', data)
-    client.publish(PUMP_TOPIC, data)
+    client.publish(PUMP_TOPIC, data, qos=1, retain=True)
 
 
 if __name__ == '__main__':
